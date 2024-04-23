@@ -163,7 +163,7 @@ cython_debug/
 *.pyc
 *.sw*
 micro-benchmark/*_test.py
+micro-benchmark/snippets/
 micro-benchmark-key-errs/*_test.py
-micro-benchmark/*.json
-micro-benchmark-key-errs/*.json
+micro-benchmark-key-errs/snippets/
 pycg/tests/*.py
