@@ -29,6 +29,12 @@ from pycg import utils
 
 SCRIPT_DIR = dirname(abspath(__file__))
 
+def cg2Json(cg):
+    s = {}
+    for key in cg:
+        s[key] = sorted(cg[key])
+    return s
+
 
 class TestBase(TestCase):
     snippet_dir = ""
@@ -58,8 +64,10 @@ class TestBase(TestCase):
         if not self.cg_class:
             error()
 
+    # test begin
     def validate_snippet(self, snippet_path):
         output = self.get_snippet_output_cg(snippet_path)
+        # TODO: output generated cg
         expected = self.get_snippet_expected_cg(snippet_path)
 
         self.assertEqual(output, expected)
@@ -67,18 +75,23 @@ class TestBase(TestCase):
     def get_snippet_path(self, name):
         return os.path.join(self.snippets_path, self.snippet_dir, name)
 
+    # get call graph
     def get_snippet_output_cg(self, snippet_path):
         main_path = os.path.join(snippet_path, "main.py")
+        output_path = os.path.join(snippet_path, "output.json")
         try:
             cg = self.cg_class(
                 [main_path], snippet_path, -1, utils.constants.CALL_GRAPH_OP
             )
             cg.analyze()
-            return cg.output()
+            output = cg.output()
+            with open(output_path, "w") as f:
+                json.dump(cg2Json(output), f, indent=4)
+            return output
         except Exception as e:
             cg.tearDown()
             raise e
-
+    
     def get_snippet_expected_cg(self, snippet_path):
         cg_path = os.path.join(snippet_path, "callgraph.json")
         with open(cg_path, "r") as f:
